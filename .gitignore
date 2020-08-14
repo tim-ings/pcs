@@ -1,3 +1,6 @@
+# other people's solutions I do not want to commit
+*.soln.*
+
 # Prerequisites
 *.d
 
