@@ -3,17 +3,23 @@ import Text.Regex.Posix
 
 type Coord = (Int, Int)
 
+-- input handling
+
 main :: IO ()
-main = interact $ show . (map convertAZtoRC) . readInp
+main = interact $ show . (map convertInp) . readInp
 
 readInp :: String -> [String]
 readInp = tail . lines
 
-isRC :: String -> Bool
-isRC s = s =~ "R([1-9]+)C([1-9]+)"
+convertInp :: String -> String
+convertInp s = if isRC s
+    then formatAZ $ parseRC s
+    else formatRC $ parseAZ s
 
-isAZ :: String -> Bool
-isAZ s = s =~ "([A-Z]+)([1-9]+)"
+isRC :: String -> Bool
+isRC s = s =~ "R([0-9]+)C([0-9]+)"
+
+-- AZ format
 
 parseAZ :: String -> Coord
 parseAZ s = (row, col)
@@ -35,8 +41,28 @@ parseAZCol colLetters = sum
 abcTo123 :: Char -> Int
 abcTo123 = (subtract 64) . ord
 
-convertAZtoRC :: String -> String
-convertAZtoRC = formatRC . parseAZ
+formatAZ :: Coord -> String
+formatAZ (row, col) = formatAZCol col ++ show row
+
+-- TODO: write a function that uses `mod 26` to format excel column names
+formatAZCol :: Int -> String
+formatAZCol col = show (map nums 1)
+    where ls = [x * 26 | x <- [0 .. 10]]
+          mods = map mod 
+          nums = map myMod ls
+
+myMod :: Int -> Int -> Int
+myMod x y = mod y x
+
+-- RC format
+
+parseRC :: String -> Coord
+parseRC s = (row, col)
+    where row = 1
+          col = 1
+
+splitRC :: String -> (String, String, String)
+splitRC s = s =~ "R([0-9]+)C([0-9]+)"
 
 formatRC :: Coord -> String
 formatRC (row, col) = "R" ++ show row ++ "C" ++ show col
